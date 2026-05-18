@@ -71,7 +71,7 @@ O prompt instrui o modelo a classificar o bug por complexidade (Simples, Médio,
 
 - **Screenshots:**
 ![Avaliação v2](screenshots/avaliacao_v2.png)
-![Tracing Langsmith](screenshots/langsmith_tracing.png)
+![Tracing Langsmith](screenshots/tracing_langsmith.png)
 ![Dataset](screenshots/dataset.png)
 
 ---
