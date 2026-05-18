@@ -31,6 +31,25 @@ def pull_prompts_from_langsmith():
         # Converte para dicionário usando serialização nativa
         prompt_dict = prompt.dict()
         
+        # Extrai os textos do prompt caso seja um ChatPromptTemplate
+        # (Corrige problema de serialização de mensagens nas novas versões do LangChain)
+        if hasattr(prompt, 'messages'):
+            messages = []
+            for msg in prompt.messages:
+                if hasattr(msg, 'prompt') and hasattr(msg.prompt, 'template'):
+                    msg_type = msg.__class__.__name__.replace("MessagePromptTemplate", "").lower()
+                    messages.append({
+                        "role": msg_type,
+                        "template": msg.prompt.template
+                    })
+                elif hasattr(msg, 'content'):
+                    messages.append({
+                        "role": "message",
+                        "template": msg.content
+                    })
+            
+            prompt_dict['messages'] = messages
+        
         if save_yaml(prompt_dict, output_path):
             print(f"✅ Prompt salvo com sucesso em {output_path}")
             return True
@@ -46,7 +65,7 @@ def main():
     """Função principal"""
     print_section_header("Pull de Prompts do LangSmith")
     
-    if not check_env_vars(["LANGCHAIN_API_KEY"]):
+    if not check_env_vars(["LANGSMITH_API_KEY"]):
         return 1
         
     success = pull_prompts_from_langsmith()
